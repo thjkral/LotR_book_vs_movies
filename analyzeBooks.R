@@ -1,4 +1,4 @@
-setwd("/home/tom/Projects/LotR Books_vs_movies/BookData")
+setwd("/home/tom/Projects/LotR_Books_vs_movies/BookData")
 
 # Load libraries
 #install.packages("RWeka") # install RWeka package
@@ -26,6 +26,7 @@ fotr <- read_file("test.txt")
 
 cleanText <- function(text){
   
+  text <- str_conv(text, "latin1")
   text <- gsub("[[\\n\\r]]", "", text)
   text <- gsub("[[:punct:]]", "", text)
   text <- gsub("[[:digit:]]", "", text)
