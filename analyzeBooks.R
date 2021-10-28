@@ -3,6 +3,7 @@ setwd("/home/tom/Projects/LotR_Books_vs_movies/BookData")
 # Load libraries
 #install.packages("RWeka") # install RWeka package
 #install.packages("readr")
+#install.packages("textdata")
 library(tidyverse) # data manipulation
 library(tm) # text mining
 library(wordcloud) # word cloud generator
@@ -16,13 +17,30 @@ library(readr)
 library(stringr)
 
 
-# load data
+# Load data
 
 #fotr <- read_file("01 - The Fellowship Of The Ring.txt")
 #ttt <- read_file("02 - The Two Towers.txt")
 #rotk <- read_file("03 - The Return Of The King.txt")
 fotr <- read_file("test.txt")
 
+
+# Print some metrics
+
+printDiversity <- function(text){
+  
+  wordList <- unlist(str_split(text, " "))
+  totalWords <- length(wordList)
+  uniqueWords <- length(unique(wordList))
+  lexDiv <- uniqueWords / totalWords
+  
+  print(cat("Total words: ", totalWords, "\n Unique words: ", uniqueWords, "\n Lexical diversity: ", lexDiv, "\n"))
+  
+}
+printDiversity(fotr)
+
+
+# Functions for cleanng the texts
 
 cleanText <- function(text){
   
@@ -37,25 +55,25 @@ cleanText <- function(text){
   
 }
 
-printDiversity <- function(text){
+removeStopwords <- function(text){
   
-  wordList <- unlist(str_split(text, " "))
-  totalWords <- length(wordList)
-  uniqueWords <- length(unique(wordList))
-  lexDiv <- uniqueWords / totalWords
+  textList <- unlist(str_split(text, " "))
+  text_nsw <- textList[!(textList) %in% stop_words$word]
+  text_cleaned <- paste(text_nsw, collapse = " ")
   
-  print(cat("Total words: ", totalWords, "\n Unique words: ", uniqueWords, "\n Lexical diversity: ", lexDiv, "\n"))
+  return(text_cleaned)
   
 }
 
 
-fotr <- cleanText(fotr)
+# Clean the texts
 
-printDiversity(fotr)
+fotr_clean <- cleanText(fotr)
+fotr_nsw <- removeStopwords(fotr_clean)
+
+print(fotr_nsw)
 
 
 # Sentiment analysis
-
-
 
 
