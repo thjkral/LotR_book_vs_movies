@@ -10,10 +10,9 @@
 #install.packages("RWeka") # install RWeka package
 #install.packages("readr")
 #install.packages("textdata")
+#install.packages("dplyr")
 library(tidyverse) # data manipulation
 library(tm) # text mining
-library(wordcloud) # word cloud generator
-library(wordcloud2) # word cloud generator
 library(tidytext) # text mining for word processing and sentiment analysis
 library(reshape2) # reshapes a data frame
 library(radarchart) # drawing the radar chart from a data frame
@@ -21,6 +20,7 @@ library(RWeka) # data mining tasks
 library(knitr) # dynamic report generation
 library(readr)
 library(stringr)
+library(dplyr)
 
 
 
@@ -38,7 +38,6 @@ cleanText <- function(text){ # cleans text
   text <- str_squish(text) # removes repeating whitespace
   
   return(text)
-  
 }
 
 removeStopwords <- function(text){ # removes all English stopwords from a text
@@ -48,7 +47,6 @@ removeStopwords <- function(text){ # removes all English stopwords from a text
   text_cleaned <- paste(text_nsw, collapse = " ")
   
   return(text_cleaned)
-  
 }
 
 printDiversity <- function(text){ # print the lexical diversity of a text
@@ -59,25 +57,24 @@ printDiversity <- function(text){ # print the lexical diversity of a text
   lexDiv <- uniqueWords / totalWords
   
   print(cat("Total words: ", totalWords, "\n Unique words: ", uniqueWords, "\n Lexical diversity: ", lexDiv, "\n"))
-  
 }
 
 
-
-##################################
-# MAIN FUNCTION TO ANAYZE A BOOK #
-##################################
-
-analyzeBook <- function(book){
+performSentimentAnalysis <- function(text){ # perform a sentiment analysis
   
-  # Print some metrics
-  printDiversity(book)
+  textList <- unlist(str_split(text, " "))
+  df <- data.frame(matrix(unlist(textList), nrow = length(textList), byrow = TRUE), stringsAsFactors = FALSE)
   
-  # Clean the texts
-  book_clean <- cleanText(book)
-  book_clean <- removeStopwords(book_clean)
-  
-  print(book_clean)
+  for(row in 1:nrow(df)){
+    
+    tokens <- tibble(text = row) %>% unnest_tokens(word, text)
+    
+    sentiment <- tokens %>%
+      inner_join(get_sentiments("ncr")) %>% 
+      count(sentiment) %>% 
+      spread(sentiment, n, fill = 0)
+    
+  }
   
   
 }
@@ -93,27 +90,39 @@ analyzeBook <- function(book){
 
 setwd("/home/tom/Projects/LotR_Books_vs_movies/BookData")
 
-#fotr <- read_file("01 - The Fellowship Of The Ring.txt")
-#ttt <- read_file("02 - The Two Towers.txt")
-#rotk <- read_file("03 - The Return Of The King.txt")
+titles <- c("The Fellowship of the Ring", "The Two Towers", "The Return of the King")
+
+fotr <- read_file("01 - The Fellowship Of The Ring.txt")
+ttt <- read_file("02 - The Two Towers.txt")
+rotk <- read_file("03 - The Return Of The King.txt")
 
 # load test file instead
-test <- read_file("test.txt")
+#test <- read_file("test.txt")
+#test_cleaned <- analyzeBook(test)
 
-test_cleaned <- analyzeBook(test)
+
+# Clean text
+fotr_c <- cleanText(fotr)
+ttt_c <- cleanText(ttt)
+rotk_c <- cleanText(rotk)
+
+# remove stopwords
+fotr_nsw <- removeStopwords(fotr_c)
+ttt_nsw <- removeStopwords(ttt_c)
+rotk_nsw <- removeStopwords(rotk_c)
+
+# Merge all books into data frame
+books <- c(fotr_nsw, ttt_nsw, rotk_nsw)
+
+trilogy <- data.frame(titles, books)
+names(trilogy) <- c("Title", "Content")
 
 
-# Sentiment analysis
 
-performSentimentAnalysis <- function(text){
-  
-  textList <- unlist(str_split(text, " "))
-  df <- data.frame(matrix(unlist(textList), nrow = length(textList), byrow = TRUE), stringsAsFactors = FALSE)
-  
 
-}
+# clean all the text
 
-fotrTokens <- performSentimentAnalysis(fotr_nsw)
+
 
 
 
