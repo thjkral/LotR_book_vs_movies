@@ -60,30 +60,23 @@ printDiversity <- function(text){ # print the lexical diversity of a text
 }
 
 
-performSentimentAnalysis <- function(text){ # perform a sentiment analysis
+performSentimentAnalysis <- function(trilogy){ # perform a sentiment analysis
+
   
-  textList <- unlist(str_split(text, " "))
-  df <- data.frame(matrix(unlist(textList), nrow = length(textList), byrow = TRUE), stringsAsFactors = FALSE)
-  
-  for(row in 1:nrow(df)){
+  for (row in 1:nrow(trilogy)) {
     
-    tokens <- tibble(text = row) %>% unnest_tokens(word, text)
-    
-    sentiment <- tokens %>%
-      inner_join(get_sentiments("ncr")) %>% 
-      count(sentiment) %>% 
-      spread(sentiment, n, fill = 0)
+    contents <- trilogy[row, "Content"]
+    tokens <- tibble(text = contents) %>% unnest_tokens(word, text)
     
   }
-  
   
 }
 
 
 
-#############
-# LOAD DATA #
-#############
+##############
+# OPERATIONS #
+##############
 
 
 # Load books as strings
@@ -98,7 +91,6 @@ rotk <- read_file("03 - The Return Of The King.txt")
 
 # load test file instead
 #test <- read_file("test.txt")
-#test_cleaned <- analyzeBook(test)
 
 
 # Clean text
@@ -114,13 +106,11 @@ rotk_nsw <- removeStopwords(rotk_c)
 # Merge all books into data frame
 books <- c(fotr_nsw, ttt_nsw, rotk_nsw)
 
-trilogy <- data.frame(titles, books)
+trilogy <- data.frame(titles, books, stringsAsFactors=FALSE)
 names(trilogy) <- c("Title", "Content")
 
 
-
-
-# clean all the text
+performSentimentAnalysis(trilogy)
 
 
 
