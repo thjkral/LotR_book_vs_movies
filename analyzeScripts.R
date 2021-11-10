@@ -122,13 +122,27 @@ names(trilogy) <- c("Title", "Content")
 
 sentimentResults <- performSentimentAnalysis(trilogy)
 
-ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum), y=n)) + 
+# Plot the results
+sentimentPlot <- ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum), y=n)) + 
   geom_bar(stat="identity", aes(fill=sentiment), show.legend=FALSE) +
   labs(x="Sentiment", y="Frequency") +
   theme_bw() 
 
+sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by Peter Jackson")
 
 
+# Condense the data
+results <- subset(sentimentResults, select = -word)
+results <- aggregate(results$n, list(results$sentiment), FUN = sum)
+colnames(results) <- c('Emotion', 'n_movie')
+
+# Write results to file
+write.csv(x = results, file="sentimentResults_books.csv", row.names = FALSE)
+
+
+
+# Write results to file
+write.csv(x=results, file="sentimentResults_movies.csv", row.names = FALSE)
 
 
 
