@@ -108,7 +108,7 @@ fotr_c <- cleanText(fotr)
 ttt_c <- cleanText(ttt)
 rotk_c <- cleanText(rotk)
 
-# remove stopwords
+# Remove stopwords
 fotr_nsw <- removeStopwords(fotr_c)
 ttt_nsw <- removeStopwords(ttt_c)
 rotk_nsw <- removeStopwords(rotk_c)
@@ -119,15 +119,24 @@ books <- c(fotr_nsw, ttt_nsw, rotk_nsw)
 trilogy <- data.frame(titles, books, stringsAsFactors=FALSE)
 names(trilogy) <- c("Title", "Content")
 
-
+# Perform the sentiment analysis
 sentimentResults <- performSentimentAnalysis(trilogy)
 
-ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum), y=n)) + 
+# Plot the results
+sentimentPlot <- ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum), y=n)) + 
   geom_bar(stat="identity", aes(fill=sentiment), show.legend=FALSE) +
   labs(x="Sentiment", y="Frequency") +
   theme_bw() 
 
+sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by J.R.R. Tolkien")
 
+# Condense the data
+results <- subset(sentimentResults, select = -word)
+results <- aggregate(results$n, list(results$sentiment), FUN = sum)
+colnames(results) <- c('Emotion', 'n_book')
+
+# Write results to file
+write.csv(x = results, file="sentimentResults_books.csv", row.names = FALSE)
 
 
 
