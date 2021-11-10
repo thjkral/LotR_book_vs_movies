@@ -130,12 +130,19 @@ sentimentPlot <- ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum)
 
 sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by J.R.R. Tolkien")
 
+
 # Condense the data
 results <- subset(sentimentResults, select = -word)
 results <- aggregate(results$n, list(results$sentiment), FUN = sum)
-colnames(results) <- c('Emotion', 'n_book')
+colnames(results) <- c('emotion', 'n_book')
+
 
 # Write results to file
+
+results$origin <- rep(c("book"), 10)
+results <- results[ , c("origin", "emotion", "n_book")]
+
+
 write.csv(x = results, file="sentimentResults_books.csv", row.names = FALSE)
 
 

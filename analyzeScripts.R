@@ -134,10 +134,15 @@ sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by Peter Jac
 # Condense the data
 results <- subset(sentimentResults, select = -word)
 results <- aggregate(results$n, list(results$sentiment), FUN = sum)
-colnames(results) <- c('Emotion', 'n_movie')
+colnames(results) <- c('emotion', 'n_movie')
+
 
 # Write results to file
-write.csv(x=results, file="sentimentResults_movies.csv", row.names = FALSE)
+
+results$origin <- rep(c("movie"), 10)
+results <- results[ , c("origin", "emotion", "n_movie")]
+
+write.csv(x = results, file="sentimentResults_movies.csv", row.names = FALSE)
 
 
 
