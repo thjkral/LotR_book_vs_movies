@@ -11,6 +11,7 @@
 #install.packages("readr")
 #install.packages("textdata")
 #install.packages("dplyr")
+#install.packages("ggplot2")
 library(tidyverse) # data manipulation
 library(tm) # text mining
 library(tidytext) # text mining for word processing and sentiment analysis
@@ -21,6 +22,7 @@ library(knitr) # dynamic report generation
 library(readr)
 library(stringr)
 library(dplyr)
+library(ggplot2)
 
 
 
@@ -36,6 +38,7 @@ cleanText <- function(text){ # cleans text
   text <- gsub("[[:digit:]]", "", text) # remove all numbers
   text <- tolower(text) # makes all characters lowercase
   text <- str_squish(text) # removes repeating whitespace
+  text <- gsub("merry", "", text) # remove the word "merry" from the text. This also the name of a Hobbit
   
   return(text)
 }
@@ -61,12 +64,19 @@ printDiversity <- function(text){ # print the lexical diversity of a text
 
 
 performSentimentAnalysis <- function(trilogy){ # perform a sentiment analysis
-
+  
+  sentimentDataframe <- data_frame()
   
   for (row in 1:nrow(trilogy)) {
     
-    contents <- trilogy[row, "Content"]
-    tokens <- tibble(text = contents) %>% unnest_tokens(word, text)
+    tokens <- tibble(text = trilogy[row, "Content"]) %>% unnest_tokens(word, text)
+    
+    sentiments <- tokens %>%
+      inner_join(get_sentiments("nrc"), "word") %>%
+      count(word, sentiment, sort = TRUE)
+    
+    sentimentDataframe <- bind_rows(sentimentDataframe, sentiments)
+    return(sentimentDataframe)
     
   }
   
@@ -110,7 +120,12 @@ trilogy <- data.frame(titles, books, stringsAsFactors=FALSE)
 names(trilogy) <- c("Title", "Content")
 
 
-performSentimentAnalysis(trilogy)
+sentimentResults <- performSentimentAnalysis(trilogy)
+
+ggplot(data=sentimentResults, aes(x=reorder(sentiment, -n, sum), y=n)) + 
+  geom_bar(stat="identity", aes(fill=sentiment), show.legend=FALSE) +
+  labs(x="Sentiment", y="Frequency") +
+  theme_bw() 
 
 
 
