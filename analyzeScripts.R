@@ -91,13 +91,13 @@ performSentimentAnalysis <- function(trilogy){ # perform a sentiment analysis
 
 # Load books as strings
 
-setwd("/home/tom/Projects/LotR_Books_vs_movies/BookData")
+setwd("/home/tom/Projects/LotR_Books_vs_movies/MovieData")
 
 titles <- c("The Fellowship of the Ring", "The Two Towers", "The Return of the King")
 
-fotr <- read_file("01 - The Fellowship Of The Ring.txt")
-ttt <- read_file("02 - The Two Towers.txt")
-rotk <- read_file("03 - The Return Of The King.txt")
+fotr <- read_file("FellowshipOfTheRing.txt")
+ttt <- read_file("TwoTowers.txt")
+rotk <- read_file("ReturnOfTheKing.txt")
 
 # load test file instead
 #test <- read_file("test.txt")
