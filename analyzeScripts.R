@@ -1,5 +1,5 @@
 # Author: Tom Kral
-# About:  This script is for analyzing a text/book in .txt format. 
+# About:  This script is for analyzing a movie script in .txt format. 
 # Manual: The entire script can be called at once to perform the analyses. As per R rules, all functions are generated first.
 #         Operations are called at the bottom of the script.
 
@@ -135,11 +135,6 @@ sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by Peter Jac
 results <- subset(sentimentResults, select = -word)
 results <- aggregate(results$n, list(results$sentiment), FUN = sum)
 colnames(results) <- c('Emotion', 'n_movie')
-
-# Write results to file
-write.csv(x = results, file="sentimentResults_books.csv", row.names = FALSE)
-
-
 
 # Write results to file
 write.csv(x=results, file="sentimentResults_movies.csv", row.names = FALSE)
