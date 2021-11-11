@@ -65,6 +65,8 @@ printDiversity <- function(text){ # print the lexical diversity of a text
 
 performSentimentAnalysis <- function(trilogy){ # perform a sentiment analysis
   
+  print(trilogy$Title)
+  
   sentimentDataframe <- data_frame()
   
   for (row in 1:nrow(trilogy)) {
@@ -113,6 +115,13 @@ fotr_nsw <- removeStopwords(fotr_c)
 ttt_nsw <- removeStopwords(ttt_c)
 rotk_nsw <- removeStopwords(rotk_c)
 
+
+# print lexical diversity
+printDiversity(fotr_nsw)
+printDiversity(ttt_nsw)
+printDiversity(rotk_nsw)
+
+
 # Merge all books into data frame
 books <- c(fotr_nsw, ttt_nsw, rotk_nsw)
 
@@ -134,13 +143,13 @@ sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by Peter Jac
 # Condense the data
 results <- subset(sentimentResults, select = -word)
 results <- aggregate(results$n, list(results$sentiment), FUN = sum)
-colnames(results) <- c('emotion', 'n_movie')
+colnames(results) <- c('emotion', 'n')
 
 
 # Write results to file
 
 results$origin <- rep(c("movie"), 10)
-results <- results[ , c("origin", "emotion", "n_movie")]
+results <- results[ , c("origin", "emotion", "n")]
 
 write.csv(x = results, file="sentimentResults_movies.csv", row.names = FALSE)
 

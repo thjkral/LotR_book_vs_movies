@@ -69,6 +69,7 @@ performSentimentAnalysis <- function(trilogy){ # perform a sentiment analysis
   
   for (row in 1:nrow(trilogy)) {
     
+    print(trilogy$Title)
     tokens <- tibble(text = trilogy[row, "Content"]) %>% unnest_tokens(word, text)
     
     sentiments <- tokens %>%
@@ -113,6 +114,12 @@ fotr_nsw <- removeStopwords(fotr_c)
 ttt_nsw <- removeStopwords(ttt_c)
 rotk_nsw <- removeStopwords(rotk_c)
 
+# print lexical diversity
+printDiversity(fotr_nsw)
+printDiversity(ttt_nsw)
+printDiversity(rotk_nsw)
+
+
 # Merge all books into data frame
 books <- c(fotr_nsw, ttt_nsw, rotk_nsw)
 
@@ -134,16 +141,16 @@ sentimentPlot + labs(title = "Emotions in the The Lord of the Rings by J.R.R. To
 # Condense the data
 results <- subset(sentimentResults, select = -word)
 results <- aggregate(results$n, list(results$sentiment), FUN = sum)
-colnames(results) <- c('emotion', 'n_book')
+colnames(results) <- c('emotion', 'n')
 
 
 # Write results to file
 
 results$origin <- rep(c("book"), 10)
-results <- results[ , c("origin", "emotion", "n_book")]
+results <- results[ , c("origin", "emotion", "n")]
+results <- results %>% arrange(desc(n))
 
-
-write.csv(x = results, file="sentimentResults_books.csv", row.names = FALSE)
+#write.csv(x = results, file="sentimentResults_books_rotk.csv", row.names = FALSE)
 
 
 
