@@ -45,8 +45,10 @@ cleanText <- function(text){ # cleans text
 
 removeStopwords <- function(text){ # removes all English stopwords from a text
   
+  stopwords_df <- get_stopwords(source = "snowball")
+  
   textList <- unlist(str_split(text, " "))
-  text_nsw <- textList[!(textList) %in% stop_words$word]
+  text_nsw <- textList[!(textList) %in% stopwords_df$word]
   text_cleaned <- paste(text_nsw, collapse = " ")
   
   return(text_cleaned)
